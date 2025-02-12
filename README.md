@@ -30,13 +30,7 @@ else:
 ```python
 # Select a neighbourhood of London you know well and get the graph in osmnx with a radius of 2000m
 
-G=ox.graph_from_address('Walthamstow, London', dist=2000)
-
-#This retrieves a street network as a MultiDiGraph (a directed graph that allows multiple edges between nodes) using OSMnx.
-```
-
-
-```python
+G=ox.graph_from_address('Walthamstow, London', dist=2000, network_type='walk')
 
 ```
 
@@ -56,6 +50,8 @@ nx.set_edge_attributes(DG, edge_bc,'cc')
 
 
 ```python
+# Run a street network analysis for a neighbourhood in London: degree centrality
+
 edge_dc = nx.degree_centrality(nx.line_graph(DG))
 nx.set_edge_attributes(DG, edge_dc,'dc')
 
@@ -63,12 +59,10 @@ nx.set_edge_attributes(DG, edge_dc,'dc')
 
 
 ```python
-#Run a street network analysis for a neighbourhood in London: betweeness centrality - taking too long to run
+# Run a street network analysis for a neighbourhood in London: betweenesss centrality
 
-#edge_bc = nx.betweenness_centrality(nx.line_graph(DG))
-#nx.set_edge_attributes(DG, edge_bc,'bc')
-
-
+edge_dc = nx.betweenness_centrality(nx.line_graph(DG))
+nx.set_edge_attributes(DG, edge_dc,'bc')
 ```
 
 
@@ -85,7 +79,7 @@ gdf_edges = ox.graph_to_gdfs(G1,nodes=False,fill_edge_geometry=True)
 # set crs to 3857 (needed for contextily)
 gdf_edges = gdf_edges.to_crs(epsg=3857) # setting crs to 3857
 
-# plot edges according to degree centrality
+# plot edges according to closeness centrality
 ax=gdf_edges.plot('cc',cmap='plasma',figsize=(10,10),legend=True,
                      legend_kwds={'label': "Closeness Centrality", 'orientation': "vertical"})
 
@@ -93,12 +87,16 @@ ax=gdf_edges.plot('cc',cmap='plasma',figsize=(10,10),legend=True,
 import contextily as ctx
 ctx.add_basemap(ax,source=ctx.providers.CartoDB.Positron)
 plt.axis('off')
+plt.title ('Closeness Centrality', fontsize=15)
+
+plt.savefig('cc.png', bbox_inches='tight', dpi=300)
+
 plt.show()
 ```
 
 
     
-![png](formative_files/formative_8_0.png)
+![png](output_7_0.png)
     
 
 
@@ -117,13 +115,45 @@ ax=gdf_edges.plot('dc',cmap='plasma',figsize=(10,10),legend=True,
 # add a basemap using contextilly
 import contextily as ctx
 ctx.add_basemap(ax,source=ctx.providers.CartoDB.Positron)
+plt.title ('Degree Centrality', fontsize=15)
 plt.axis('off')
+
+plt.savefig('dc.png', bbox_inches='tight', dpi=300)
 plt.show()
 ```
 
 
     
-![png](formative_files/formative_9_0.png)
+![png](output_8_0.png)
+    
+
+
+
+```python
+# convert graph to geopandas dataframe
+gdf_edges = ox.graph_to_gdfs(G1,nodes=False,fill_edge_geometry=True)
+
+# set crs to 3857 (needed for contextily)
+gdf_edges = gdf_edges.to_crs(epsg=3857) # setting crs to 3857
+
+# plot edges according to betweeness centrality
+ax=gdf_edges.plot('bc',cmap='plasma',figsize=(10,10),legend=True,
+                     legend_kwds={'label': "Betweeness Centrality", 'orientation': "vertical"})
+
+# add a basemap using contextilly
+import contextily as ctx
+ctx.add_basemap(ax,source=ctx.providers.CartoDB.Positron)
+plt.title ('Betweeness Centrality', fontsize=15)
+plt.axis('off')
+
+
+plt.savefig('bc.png', bbox_inches='tight', dpi=300)
+plt.show()
+```
+
+
+    
+![png](output_9_0.png)
     
 
 
@@ -157,7 +187,7 @@ plt.show()
 
 
     
-![png](formative_files/formative_13_0.png)
+![png](output_13_0.png)
     
 
 
@@ -178,7 +208,39 @@ plt.show()
 
 
     
-![png](formative_files/formative_14_0.png)
+![png](output_14_0.png)
+    
+
+
+
+```python
+fig, ax = plt.subplots(figsize=(10,10))
+
+# Plot buildings with a legend
+plot = all_geom[all_geom['building'].notna()].plot('building',
+                                                   ax=ax,
+                                                   categorical=True,
+                                                   legend=True)
+
+# Move legend outside the map
+leg = ax.get_legend()
+leg.set_bbox_to_anchor((1.4, 0.9))  # Moves legend outside (right side)
+leg.set_title("Building Types")  # Optional: Add a title
+
+# Add basemap
+ctx.add_basemap(ax, source=ctx.providers.CartoDB.Positron)
+
+plt.axis('off')  # Remove axes
+
+plt.title ('Building Landuse in Walthamstow', fontsize=15)
+plt.savefig('landuse.png', bbox_inches='tight', dpi=300)
+plt.show()
+
+```
+
+
+    
+![png](output_15_0.png)
     
 
 
@@ -187,22 +249,22 @@ plt.show()
 fig, ax = plt.subplots(figsize=(10, 10))
 
 # Filter only university buildings
-universities = all_geom[(all_geom['building'].notna()) & (all_geom['building'].str.contains('retail', case=False, na=False))]
+retail = all_geom[(all_geom['building'].notna()) & (all_geom['building'].str.contains('retail', case=False, na=False))]
 
 # Plot universities
-universities.plot(ax=ax, color='red', edgecolor='black', alpha=0.7, legend=True)
+retail.plot(ax=ax, color='red', edgecolor='black', alpha=0.7, legend=True)
 
 # Add basemap
 ctx.add_basemap(ax, source=ctx.providers.CartoDB.Positron)
 
 plt.axis('off')
-plt.title("University Buildings")
+plt.title("Retail Buildings")
 plt.show()
 ```
 
 
     
-![png](formative_files/formative_15_0.png)
+![png](output_16_0.png)
     
 
 
@@ -214,12 +276,12 @@ plt.show()
 
 
 ```python
-walthamstow = ox.geocode("Walthamstow, London")
+retail = ox.geocode("retail")
 
-print(walthamstow)
+print(retail)
 ```
 
-    (51.5815237, -0.0237594)
+    (7.4892035, 80.36586176310229)
 
 
 
@@ -253,143 +315,24 @@ fig,ax = ox.plot_graph_route(G, route )
 
 
     
-![png](formative_files/formative_19_0.png)
+![png](output_20_0.png)
     
 
 
 
 ```python
-# Load street network
-place = "Walthamstow, London"
-G = ox.graph_from_place(place, network_type="walk")  # or 'drive' for cars
+Research Question: Identifying the most optimal location for a cafe in Walthamstow
 
-# Convert to DiGraph for centrality measures
-G = ox.convert.to_digraph(G)
+Café Nero is opening a cafe in Walthamstow. This project seeks to identify the most optimal location for the cafe to maximise footfall. 
+OSMnx was utilised to obtain a graph of Walthamstow with a 2000m radius. This graph was used to explore closeness centrality, degree centrality, betweenness centrality and land use. 
 
-# Compute centrality (e.g., betweenness)
-betweenness = nx.betweenness_centrality(G, weight="length")
-nx.set_edge_attributes(G, betweenness, "betweenness")
+Figure 1 shows that Walthamstow Central has the greatest closeness centrality, indicating that Walthamstow Central is a highly accessible location. 
+This is expected as the London Overground and Underground stations are situated in this location. Similarly, Figure 2 shows that Walthamstow Central has a high degree centrality, suggesting that this node is directly connected to many other nodes.
+By contrast, Figure 3 reveals that Walthamstow Central does not have a high betweenness centrality. Figure 3 evidences high betweenness centrality on Hoe Street. This suggests that this node acts as an intermediary in the shortest path between other nodes. 
 
-# Convert graph to GeoDataFrame
-gdf_edges = ox.graph_to_gdfs(G, nodes=False)
+Therefore, it can be suggested that Café Nero ought to locate a coffee shop around Selborne Road as there is a high closeness centrality and a high degree centrality at this node. 
+As this node is highly accessible and can be directly reached by many other nodes, it means that people are more likely to visit the cafe as it is conveniently placed.
+As well as this, Selborne Road is adjacent to Hoe Street which means it will have high visibility which is likely to yield greater footfall. Figure 4 confirm this argument as retail shops and train stations are located on Selborne Road.
 
-# Load retail locations (Example: CSV with latitude & longitude)
-gdf_retail = gpd.read_file("retail_locations.geojson")  # Replace with actual file
 
-# Convert CRS to match street network
-gdf_retail = gdf_retail.to_crs(gdf_edges.crs)
-
-# Plot results
-fig, ax = plt.subplots(figsize=(10, 10))
-gdf_edges.plot(column="betweenness", cmap="plasma", ax=ax, linewidth=1, legend=True)
-gdf_retail.plot(ax=ax, color="red", markersize=10, label="Retail Locations")
-plt.legend()
-plt.show()
 ```
-
-
-    ---------------------------------------------------------------------------
-
-    TypeError                                 Traceback (most recent call last)
-
-    File /opt/anaconda3/envs/envGEOG0051/lib/python3.13/site-packages/osmnx/geocoder.py:173, in _geocode_query_to_gdf(query, which_result, by_osmid)
-        172 try:
-    --> 173     result = _get_first_polygon(results)
-        174 except TypeError as e:
-
-
-    File /opt/anaconda3/envs/envGEOG0051/lib/python3.13/site-packages/osmnx/geocoder.py:239, in _get_first_polygon(results)
-        238 # if we never found a polygon, raise an error
-    --> 239 raise TypeError
-
-
-    TypeError: 
-
-    
-    The above exception was the direct cause of the following exception:
-
-
-    TypeError                                 Traceback (most recent call last)
-
-    Cell In[41], line 3
-          1 # Load street network
-          2 place = "Walthamstow, London"
-    ----> 3 G = ox.graph_from_place(place, network_type="walk")  # or 'drive' for cars
-          5 # Convert to DiGraph for centrality measures
-          6 G = ox.convert.to_digraph(G)
-
-
-    File /opt/anaconda3/envs/envGEOG0051/lib/python3.13/site-packages/osmnx/graph.py:386, in graph_from_place(query, network_type, simplify, retain_all, truncate_by_edge, which_result, custom_filter)
-        318 """
-        319 Download and create a graph within the boundaries of some place(s).
-        320 
-       (...)
-        383 documentation for caveats.
-        384 """
-        385 # extract the geometry from the GeoDataFrame to use in query
-    --> 386 polygon = geocoder.geocode_to_gdf(query, which_result=which_result).union_all()
-        387 msg = "Constructed place geometry polygon(s) to query Overpass"
-        388 utils.log(msg, level=lg.INFO)
-
-
-    File /opt/anaconda3/envs/envGEOG0051/lib/python3.13/site-packages/osmnx/geocoder.py:125, in geocode_to_gdf(query, which_result, by_osmid)
-        123 # geocode each query, concat as GeoDataFrame rows, then set the CRS
-        124 results = (_geocode_query_to_gdf(q, wr, by_osmid) for q, wr in zip(q_list, wr_list))
-    --> 125 gdf = pd.concat(results, ignore_index=True).set_crs(settings.default_crs)
-        127 msg = f"Created GeoDataFrame with {len(gdf)} rows from {len(q_list)} queries"
-        128 utils.log(msg, level=lg.INFO)
-
-
-    File /opt/anaconda3/envs/envGEOG0051/lib/python3.13/site-packages/pandas/core/reshape/concat.py:382, in concat(objs, axis, join, ignore_index, keys, levels, names, verify_integrity, sort, copy)
-        379 elif copy and using_copy_on_write():
-        380     copy = False
-    --> 382 op = _Concatenator(
-        383     objs,
-        384     axis=axis,
-        385     ignore_index=ignore_index,
-        386     join=join,
-        387     keys=keys,
-        388     levels=levels,
-        389     names=names,
-        390     verify_integrity=verify_integrity,
-        391     copy=copy,
-        392     sort=sort,
-        393 )
-        395 return op.get_result()
-
-
-    File /opt/anaconda3/envs/envGEOG0051/lib/python3.13/site-packages/pandas/core/reshape/concat.py:445, in _Concatenator.__init__(self, objs, axis, join, keys, levels, names, ignore_index, verify_integrity, copy, sort)
-        442 self.verify_integrity = verify_integrity
-        443 self.copy = copy
-    --> 445 objs, keys = self._clean_keys_and_objs(objs, keys)
-        447 # figure out what our result ndim is going to be
-        448 ndims = self._get_ndims(objs)
-
-
-    File /opt/anaconda3/envs/envGEOG0051/lib/python3.13/site-packages/pandas/core/reshape/concat.py:504, in _Concatenator._clean_keys_and_objs(self, objs, keys)
-        502     objs_list = [objs[k] for k in keys]
-        503 else:
-    --> 504     objs_list = list(objs)
-        506 if len(objs_list) == 0:
-        507     raise ValueError("No objects to concatenate")
-
-
-    File /opt/anaconda3/envs/envGEOG0051/lib/python3.13/site-packages/osmnx/geocoder.py:124, in <genexpr>(.0)
-        121     raise ValueError(msg)
-        123 # geocode each query, concat as GeoDataFrame rows, then set the CRS
-    --> 124 results = (_geocode_query_to_gdf(q, wr, by_osmid) for q, wr in zip(q_list, wr_list))
-        125 gdf = pd.concat(results, ignore_index=True).set_crs(settings.default_crs)
-        127 msg = f"Created GeoDataFrame with {len(gdf)} rows from {len(q_list)} queries"
-
-
-    File /opt/anaconda3/envs/envGEOG0051/lib/python3.13/site-packages/osmnx/geocoder.py:176, in _geocode_query_to_gdf(query, which_result, by_osmid)
-        174     except TypeError as e:
-        175         msg = f"Nominatim did not geocode query {query!r} to a geometry of type (Multi)Polygon."
-    --> 176         raise TypeError(msg) from e
-        178 elif len(results) >= which_result:
-        179     # else, if we got at least which_result results, choose that one
-        180     result = results[which_result - 1]
-
-
-    TypeError: Nominatim did not geocode query 'Walthamstow, London' to a geometry of type (Multi)Polygon.
-
