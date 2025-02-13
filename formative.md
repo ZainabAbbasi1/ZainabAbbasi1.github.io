@@ -1,4 +1,34 @@
 ```python
+!pip install osmnx
+```
+
+    Collecting osmnx
+      Downloading osmnx-2.0.1-py3-none-any.whl.metadata (4.9 kB)
+    Requirement already satisfied: geopandas>=1.0 in /opt/anaconda3/lib/python3.12/site-packages (from osmnx) (1.0.1)
+    Requirement already satisfied: networkx>=2.5 in /opt/anaconda3/lib/python3.12/site-packages (from osmnx) (3.2.1)
+    Requirement already satisfied: numpy>=1.22 in /opt/anaconda3/lib/python3.12/site-packages (from osmnx) (1.26.4)
+    Requirement already satisfied: pandas>=1.4 in /opt/anaconda3/lib/python3.12/site-packages (from osmnx) (2.2.2)
+    Requirement already satisfied: requests>=2.27 in /opt/anaconda3/lib/python3.12/site-packages (from osmnx) (2.32.2)
+    Requirement already satisfied: shapely>=2.0 in /opt/anaconda3/lib/python3.12/site-packages (from osmnx) (2.0.6)
+    Requirement already satisfied: pyogrio>=0.7.2 in /opt/anaconda3/lib/python3.12/site-packages (from geopandas>=1.0->osmnx) (0.10.0)
+    Requirement already satisfied: packaging in /opt/anaconda3/lib/python3.12/site-packages (from geopandas>=1.0->osmnx) (23.2)
+    Requirement already satisfied: pyproj>=3.3.0 in /opt/anaconda3/lib/python3.12/site-packages (from geopandas>=1.0->osmnx) (3.7.0)
+    Requirement already satisfied: python-dateutil>=2.8.2 in /opt/anaconda3/lib/python3.12/site-packages (from pandas>=1.4->osmnx) (2.9.0.post0)
+    Requirement already satisfied: pytz>=2020.1 in /opt/anaconda3/lib/python3.12/site-packages (from pandas>=1.4->osmnx) (2024.1)
+    Requirement already satisfied: tzdata>=2022.7 in /opt/anaconda3/lib/python3.12/site-packages (from pandas>=1.4->osmnx) (2023.3)
+    Requirement already satisfied: charset-normalizer<4,>=2 in /opt/anaconda3/lib/python3.12/site-packages (from requests>=2.27->osmnx) (2.0.4)
+    Requirement already satisfied: idna<4,>=2.5 in /opt/anaconda3/lib/python3.12/site-packages (from requests>=2.27->osmnx) (3.7)
+    Requirement already satisfied: urllib3<3,>=1.21.1 in /opt/anaconda3/lib/python3.12/site-packages (from requests>=2.27->osmnx) (2.2.2)
+    Requirement already satisfied: certifi>=2017.4.17 in /opt/anaconda3/lib/python3.12/site-packages (from requests>=2.27->osmnx) (2024.8.30)
+    Requirement already satisfied: six>=1.5 in /opt/anaconda3/lib/python3.12/site-packages (from python-dateutil>=2.8.2->pandas>=1.4->osmnx) (1.16.0)
+    Downloading osmnx-2.0.1-py3-none-any.whl (99 kB)
+    [2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m99.6/99.6 kB[0m [31m2.0 MB/s[0m eta [36m0:00:00[0ma [36m0:00:01[0m
+    [?25hInstalling collected packages: osmnx
+    Successfully installed osmnx-2.0.1
+
+
+
+```python
 # imports the various library for the lab
 import numpy as np
 import pandas as pd
@@ -12,19 +42,7 @@ import matplotlib.colors as colors
 #ox.config(log_console=True, use_cache=True)
 
 import sys
-print (f'current environment: {sys.prefix}')
-
-if ox.__version__=='2.0.1':
-    #prints OSMNx version 
-    print (f'current osmnx version: {ox.__version__}') 
-else:
-    #recommends student to upgrade to newer osmnx version.
-    print (f'current osmnx version: {ox.__version__}. student might need to upgrade to osmnx=2.0.1 for the notebook to work')
 ```
-
-    current environment: /opt/anaconda3/envs/envGEOG0051
-    current osmnx version: 2.0.1
-
 
 
 ```python
@@ -96,7 +114,7 @@ plt.show()
 
 
     
-![png](output_7_0.png)
+![png](output_8_0.png)
     
 
 
@@ -124,7 +142,7 @@ plt.show()
 
 
     
-![png](output_8_0.png)
+![png](output_9_0.png)
     
 
 
@@ -153,7 +171,7 @@ plt.show()
 
 
     
-![png](output_9_0.png)
+![png](output_10_0.png)
     
 
 
@@ -161,56 +179,6 @@ plt.show()
 ```python
 #Run a street network analysis for a neighbourhood in London: land use
 ```
-
-
-```python
-ox.io.save_graph_geopackage(G)
-```
-
-
-```python
-# you can get the geometries of a place similar to getting a graph 
-tags= tags={'amenity': True, 'highway':True, 'landuse':True, 'building':True, 'waterway': True, 'railway': True}
-all_geom=ox.features_from_address('Walthamstow, London', tags, dist=1000)
-all_geom = all_geom.to_crs(epsg=3857)
-```
-
-
-```python
-fig,ax = plt.subplots(figsize=(10,10))
-all_geom[all_geom['landuse'].notna()].plot(ax=ax,color='black')
-import contextily as ctx
-ctx.add_basemap(ax,source=ctx.providers.CartoDB.Positron)
-plt.axis('off')
-plt.show()
-```
-
-
-    
-![png](output_13_0.png)
-    
-
-
-
-```python
-fig,ax = plt.subplots(figsize=(10,10))
-all_geom[all_geom['building'].notna()].plot('building',
-                                            ax=ax,
-                                            categorical=True,
-                                            legend=True)
-import contextily as ctx
-ctx.add_basemap(ax,source=ctx.providers.CartoDB.Positron)
-plt.axis('off')
-plt.show()
-
-
-```
-
-
-    
-![png](output_14_0.png)
-    
-
 
 
 ```python
@@ -240,82 +208,7 @@ plt.show()
 
 
     
-![png](output_15_0.png)
-    
-
-
-
-```python
-fig, ax = plt.subplots(figsize=(10, 10))
-
-# Filter only university buildings
-retail = all_geom[(all_geom['building'].notna()) & (all_geom['building'].str.contains('retail', case=False, na=False))]
-
-# Plot universities
-retail.plot(ax=ax, color='red', edgecolor='black', alpha=0.7, legend=True)
-
-# Add basemap
-ctx.add_basemap(ax, source=ctx.providers.CartoDB.Positron)
-
-plt.axis('off')
-plt.title("Retail Buildings")
-plt.show()
-```
-
-
-    
-![png](output_16_0.png)
-    
-
-
-
-```python
-#Run a street network analysis for a neighbourhood in London: shortest path analysis
-
-```
-
-
-```python
-retail = ox.geocode("retail")
-
-print(retail)
-```
-
-    (7.4892035, 80.36586176310229)
-
-
-
-```python
-tottenham = ox.geocode("Tottenham, London")
-
-print(tottenham)
-```
-
-    (51.5881223, -0.0599366)
-
-
-
-```python
-
-origin_point = [51.5815237, -0.0237594] #trafalgar square
-destination_point = [51.5881223,-0.0599366] #covent garden
-origin_node = ox.nearest_nodes(G, origin_point[1],origin_point[0])
-destination_node = ox.nearest_nodes(G, destination_point[1],destination_point[0])
-origin_node, destination_node 
-
-
-
-# find the shortest path between origin and destination nodes
-route = nx.shortest_path(G, origin_node, destination_node, weight='length')
-str(route)
-
-# plot the route showing origin/destination lat-long points in red
-fig,ax = ox.plot_graph_route(G, route )
-```
-
-
-    
-![png](output_20_0.png)
+![png](output_12_0.png)
     
 
 
